@@ -2,7 +2,6 @@
     Master Informatique 2012 -- Université Aix-Marseille  
     Emmanuel Godard
 */
-
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,7 +18,7 @@ int main(int argc, char *argv[])
 {
   char * hote; /* nom d'hôte du  serveur */   
   char * port; /* port TCP du serveur */   
-  char ip[NI_MAXHOST]; /* adresse IPv4 en notation pointée */
+  char ip[NI_MAXHOST]; /* adresse IPv6 */
   struct addrinfo *resol; /* struct pour la résolution de nom */
   int s; /* descripteur de socket */
 
@@ -38,8 +37,8 @@ int main(int argc, char *argv[])
   }
 
   /* On extrait l'addresse IP */
-  sprintf(ip,"%s",inet_ntop(AF_INET6,((struct sockaddr_in6*)resol->ai_addr)->sin_addr));
-
+  inet_ntop(AF_INET6,(resol->ai_addr),ip,sizeof(ip));
+  printf("L'adesse ip est : %s\n", ip);
   /* Création de la socket, de type TCP / IP */
   /* On ne considère que la première adresse renvoyée par getaddrinfo */
   if ((s=socket(resol->ai_family,resol->ai_socktype, resol->ai_protocol))<0) {
@@ -51,7 +50,7 @@ int main(int argc, char *argv[])
   /* Connexion */
   fprintf(stderr,"Essai de connexion à %s (%s) sur le port %s\n\n",
 	  hote,ip,port);
-  if (connect(s,resol->ai_addr,sizeof(struct sockaddr_in))<0) {
+  if (connect(s,resol->ai_addr,sizeof(struct sockaddr_in6))<0) {
     perror("connexion");
     exit(4);
   }
